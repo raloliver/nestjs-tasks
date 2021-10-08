@@ -2,7 +2,7 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Friday, October 8th 2021, 6:02:03 am
+ * Last Modified: Friday, October 8th 2021, 6:34:38 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -10,6 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
 import { v4 as uuid } from 'uuid';
 import { AddTaskDto } from './dto/add-task-dto';
+import { GetTaskFilterDto } from './dto/get-tasks-filter-dto';
 
 @Injectable()
 export class TasksService {
@@ -17,6 +18,32 @@ export class TasksService {
 
   public getTasks(): Task[] {
     return this.tasks;
+  }
+
+  /**
+   * #TODO: replace this method by ORM
+   */
+  public getTasksByFilter(filterDto: GetTaskFilterDto): Task[] {
+    const { status, search } = filterDto;
+
+    let tasks = this.getTasks();
+
+    if (status) {
+      tasks = tasks.filter((task) => task.status === status);
+    }
+
+    if (search) {
+      tasks = tasks.filter((task) => {
+        if (
+          task.title.toLowerCase().includes(search) ||
+          task.description.toLowerCase().includes(search)
+        ) {
+          return true;
+        }
+      });
+    }
+
+    return tasks;
   }
 
   /**

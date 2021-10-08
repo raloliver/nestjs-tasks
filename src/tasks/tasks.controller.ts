@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Friday, October 8th 2021, 6:04:22 am
+ * Last Modified: Friday, October 8th 2021, 6:30:49 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -14,8 +14,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AddTaskDto } from './dto/add-task-dto';
+import { GetTaskFilterDto } from './dto/get-tasks-filter-dto';
 import { Task, TaskStatus } from './task.model';
 import { TasksService } from './tasks.service';
 
@@ -24,8 +26,12 @@ export class TasksController {
   constructor(private taskService: TasksService) {}
 
   @Get()
-  public getTasks(): Task[] {
-    return this.taskService.getTasks();
+  public getTasks(@Query() filterDto: GetTaskFilterDto): Task[] {
+    if (Object.keys(filterDto).length) {
+      return this.taskService.getTasksByFilter(filterDto);
+    } else {
+      return this.taskService.getTasks();
+    }
   }
 
   @Get('/:id')
