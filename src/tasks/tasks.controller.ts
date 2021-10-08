@@ -2,11 +2,11 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Friday, October 8th 2021, 5:42:49 am
+ * Last Modified: Friday, October 8th 2021, 5:51:48 am
  * Copyright © 2021 AMDE Agência
  */
 
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { AddTaskDto } from './dto/add-task-dto';
 import { Task } from './task.model';
 import { TasksService } from './tasks.service';
@@ -37,5 +37,10 @@ export class TasksController {
   @Post()
   public addTask(@Body() addTaskDto: AddTaskDto): Task {
     return this.taskService.addTask(addTaskDto);
+  }
+
+  @Delete('/:id')
+  public removeTask(@Param('id') id: string): void {
+    this.taskService.removeTask(id);
   }
 }

@@ -2,7 +2,7 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Friday, October 8th 2021, 5:39:12 am
+ * Last Modified: Friday, October 8th 2021, 5:55:00 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -39,5 +39,12 @@ export class TasksService {
     this.tasks.push(task);
 
     return task;
+  }
+
+  /**
+   * #TODO: replace this method by ORM
+   */
+  public removeTask(id: string): void {
+    this.tasks = this.tasks.filter((task) => task.id !== id);
   }
 }
