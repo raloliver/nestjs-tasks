@@ -2,7 +2,7 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Friday, October 8th 2021, 5:55:00 am
+ * Last Modified: Friday, October 8th 2021, 6:02:03 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -24,6 +24,15 @@ export class TasksService {
    */
   public getTaskById(id: string): Task {
     return this.tasks.find((task) => task.id === id);
+  }
+
+  /**
+   * #TODO: replace this method by ORM and avoid mutability
+   */
+  public updateTaskStatus(id: string, status: TaskStatus): Task {
+    const task = this.getTaskById(id);
+    task.status = status;
+    return task;
   }
 
   public addTask(addTaskDto: AddTaskDto): Task {
