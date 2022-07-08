@@ -2,15 +2,15 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Friday, July 8th 2022, 2:12:49 pm
+ * Last Modified: Friday, July 8th 2022, 2:21:24 pm
  * Copyright © 2021 AMDE Agência
  */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
 import { v4 as uuid } from 'uuid';
-import { AddTaskDto } from './dto/add-task-dto';
-import { GetTaskFilterDto } from './dto/get-tasks-filter-dto';
+import { AddTaskDtoTaskDto } from './dto/add-task.dto';
+import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 
 @Injectable()
 export class TasksService {
@@ -68,7 +68,7 @@ export class TasksService {
     return task;
   }
 
-  public addTask(addTaskDto: AddTaskDto): Task {
+  public addTask(addTaskDto: AddTaskDtoTaskDto): Task {
     const { title, description } = addTaskDto;
 
     const task: Task = {
