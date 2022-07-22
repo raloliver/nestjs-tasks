@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Friday, October 8th 2021, 6:30:49 am
+ * Last Modified: Friday, July 8th 2022, 2:25:02 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -16,14 +16,15 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { AddTaskDto } from './dto/add-task-dto';
-import { GetTaskFilterDto } from './dto/get-tasks-filter-dto';
+import { AddTaskDtoTaskDto } from './dto/add-task.dto';
+import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { Task, TaskStatus } from './task.model';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private taskService: TasksService) {}
+  constructor(private taskService: TasksService) { }
 
   @Get()
   public getTasks(@Query() filterDto: GetTaskFilterDto): Task[] {
@@ -42,8 +43,9 @@ export class TasksController {
   @Patch('/:id/status')
   public updateTaskStatus(
     @Param('id') id: string,
-    @Body('status') status: TaskStatus,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ): Task {
+    const { status } = updateTaskStatusDto
     return this.taskService.updateTaskStatus(id, status);
   }
 
@@ -57,7 +59,7 @@ export class TasksController {
    * @Body('description') description: string,
    */
   @Post()
-  public addTask(@Body() addTaskDto: AddTaskDto): Task {
+  public addTask(@Body() addTaskDto: AddTaskDtoTaskDto): Task {
     return this.taskService.addTask(addTaskDto);
   }
 
