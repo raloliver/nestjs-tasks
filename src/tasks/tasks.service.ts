@@ -2,15 +2,15 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Friday, October 8th 2021, 6:34:38 am
+ * Last Modified: Friday, July 8th 2022, 2:21:24 pm
  * Copyright © 2021 AMDE Agência
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
 import { v4 as uuid } from 'uuid';
-import { AddTaskDto } from './dto/add-task-dto';
-import { GetTaskFilterDto } from './dto/get-tasks-filter-dto';
+import { AddTaskDtoTaskDto } from './dto/add-task.dto';
+import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 
 @Injectable()
 export class TasksService {
@@ -50,7 +50,13 @@ export class TasksService {
    * #TODO: replace this method by ORM
    */
   public getTaskById(id: string): Task {
-    return this.tasks.find((task) => task.id === id);
+    const findTaskById = this.tasks.find((task) => task.id === id);
+
+    if (!findTaskById) {
+      throw new NotFoundException(`Task with ID ${id} was not found.`);
+    }
+
+    return findTaskById;
   }
 
   /**
@@ -62,7 +68,7 @@ export class TasksService {
     return task;
   }
 
-  public addTask(addTaskDto: AddTaskDto): Task {
+  public addTask(addTaskDto: AddTaskDtoTaskDto): Task {
     const { title, description } = addTaskDto;
 
     const task: Task = {
@@ -79,8 +85,11 @@ export class TasksService {
 
   /**
    * #TODO: replace this method by ORM
+   * This is not a good practice, use a ORM and refactor this
    */
   public removeTask(id: string): void {
-    this.tasks = this.tasks.filter((task) => task.id !== id);
+    const findTaskById = this.getTaskById(id);
+
+    this.tasks = this.tasks.filter((task) => task.id !== findTaskById.id);
   }
 }
