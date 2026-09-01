@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Tuesday, September 1st 2026, 4:58:28 pm
+ * Last Modified: Tuesday, September 1st 2026, 6:19:10 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -16,7 +16,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { AddTaskDtoTaskDto } from './dto/add-task.dto';
+import { AddTaskDto } from './dto/add-task.dto';
 import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { TasksService } from './tasks.service';
@@ -39,7 +39,7 @@ export class TasksController {
   public getTaskById(@Param('id') id: string): Promise<Task> {
     return this.taskService.getTaskById(id);
   }
-/*
+  /*
   @Patch('/:id/status')
   public updateTaskStatus(
     @Param('id') id: string,
@@ -48,7 +48,7 @@ export class TasksController {
     const { status } = updateTaskStatusDto;
     return this.taskService.updateTaskStatus(id, status);
   }
-
+  /*
   /**
    * @Body() just handle with attributes was sent by POST method, even there is other ones was not on Interface.
    *
@@ -57,14 +57,15 @@ export class TasksController {
    * If you wanna share pick just some attributes, just follow the example below.
    * @Body('title') title: string,
    * @Body('description') description: string,
+   */
   @Post()
-  public addTask(@Body() addTaskDto: AddTaskDtoTaskDto): Task {
+  public addTask(@Body() addTaskDto: AddTaskDto): Promise<Task> {
     return this.taskService.addTask(addTaskDto);
   }
-
+  /*
   @Delete('/:id')
   public removeTask(@Param('id') id: string): void {
     this.taskService.removeTask(id);
   }
-*/
+  */
 }

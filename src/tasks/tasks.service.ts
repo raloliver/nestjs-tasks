@@ -2,7 +2,7 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Tuesday, September 1st 2026, 5:22:06 pm
+ * Last Modified: Tuesday, September 1st 2026, 6:43:36 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -11,16 +11,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
 import { TasksRepository } from './tasks.repository';
-import { AddTaskDtoTaskDto } from './dto/add-task.dto';
+import { AddTaskDto } from './dto/add-task.dto';
 import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 
 @Injectable()
 export class TasksService {
   private tasks: Task[] = [];
 
-  constructor(
-    @InjectRepository(Task) private tasksRepository: TasksRepository,
-  ) {}
+  constructor(private readonly tasksRepository: TasksRepository) {}
   /*
   public getTasks(): Task[] {
     return this.tasks;
@@ -69,22 +67,11 @@ export class TasksService {
 
     return task;
   }
-
-  public addTask(addTaskDto: AddTaskDtoTaskDto): Task {
-    const { title, description } = addTaskDto;
-
-    const task: Task = {
-      id: 'uuid',
-      title,
-      description,
-      status: TaskStatus.OPEN,
-    };
-
-    this.tasks.push(task);
-
-    return task;
+ */
+  public addTask(addTaskDto: AddTaskDto): Promise<Task> {
+    return this.tasksRepository.addTask(addTaskDto);
   }
-
+  /*
   public removeTask(id: string): void {
     const findTaskById = this.getTaskById(id);
 

@@ -2,7 +2,7 @@
  * File: app.module.ts
  * Project: nestjs-tasks
  * Created: Thursday, September 2nd 2021, 8:43:02 pm
- * Last Modified: Tuesday, September 1st 2026, 4:02:53 pm
+ * Last Modified: Tuesday, September 1st 2026, 6:46:46 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -12,7 +12,6 @@ import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
-    TasksModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -23,6 +22,7 @@ import { TasksModule } from './tasks/tasks.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    TasksModule,
   ],
 })
 export class AppModule {}

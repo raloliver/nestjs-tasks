@@ -2,7 +2,7 @@
  * File: tasks.module.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:30:34 am
- * Last Modified: Tuesday, September 1st 2026, 5:21:24 pm
+ * Last Modified: Tuesday, September 1st 2026, 6:41:40 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -17,6 +17,6 @@ import { Task } from './task.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Task])],
   controllers: [TasksController],
-  providers: [TasksService],
+  providers: [TasksService, TasksRepository],
 })
 export class TasksModule {}
