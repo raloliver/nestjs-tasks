@@ -2,7 +2,7 @@
  * File: app.module.ts
  * Project: nestjs-tasks
  * Created: Thursday, September 2nd 2021, 8:43:02 pm
- * Last Modified: Friday, July 22nd 2022, 7:25:04 am
+ * Last Modified: Tuesday, September 1st 2026, 4:02:53 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -19,7 +19,7 @@ import { TasksModule } from './tasks/tasks.module';
       port: 5432,
       username: 'postgres',
       password: 'postgres',
-      database: 'tasks',
+      database: 'task',
       autoLoadEntities: true,
       synchronize: true,
     }),
