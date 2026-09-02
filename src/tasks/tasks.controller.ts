@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Tuesday, September 1st 2026, 6:19:10 pm
+ * Last Modified: Wednesday, September 2nd 2026, 10:15:25 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -62,10 +62,9 @@ export class TasksController {
   public addTask(@Body() addTaskDto: AddTaskDto): Promise<Task> {
     return this.taskService.addTask(addTaskDto);
   }
-  /*
+
   @Delete('/:id')
-  public removeTask(@Param('id') id: string): void {
-    this.taskService.removeTask(id);
+  public removeTask(@Param('id') id: string): Promise<void> {
+    return this.taskService.removeTask(id);
   }
-  */
 }

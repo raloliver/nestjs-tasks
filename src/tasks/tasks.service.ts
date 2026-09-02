@@ -2,7 +2,7 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Tuesday, September 1st 2026, 6:43:36 pm
+ * Last Modified: Wednesday, September 2nd 2026, 10:18:44 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -71,11 +71,12 @@ export class TasksService {
   public addTask(addTaskDto: AddTaskDto): Promise<Task> {
     return this.tasksRepository.addTask(addTaskDto);
   }
-  /*
-  public removeTask(id: string): void {
-    const findTaskById = this.getTaskById(id);
 
-    this.tasks = this.tasks.filter((task) => task.id !== findTaskById.id);
+  public async removeTask(id: string): Promise<void> {
+    const deleteResult = await this.tasksRepository.delete(id);
+
+    if (deleteResult.affected === 0) {
+      throw new NotFoundException(`Task with ID ${id} was not found.`);
+    }
   }
- */
 }
