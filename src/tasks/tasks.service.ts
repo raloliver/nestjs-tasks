@@ -2,11 +2,12 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Wednesday, September 2nd 2026, 10:31:31 am
+ * Last Modified: Wednesday, September 2nd 2026, 11:01:08 am
  * Copyright © 2021 AMDE Agência
  */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
 import { TasksRepository } from './tasks.repository';
@@ -18,34 +19,10 @@ export class TasksService {
   private tasks: Task[] = [];
 
   constructor(private readonly tasksRepository: TasksRepository) {}
-  /*
-  public getTasks(): Task[] {
-    return this.tasks;
+
+  public async getTasks(filterDto: GetTaskFilterDto): Promise<Task[]> {
+    return this.tasksRepository.getTasks(filterDto);
   }
-
-  public getTasksByFilter(filterDto: GetTaskFilterDto): Task[] {
-    const { status, search } = filterDto;
-
-    let tasks = this.getTasks();
-
-    if (status) {
-      tasks = tasks.filter((task) => task.status === status);
-    }
-
-    if (search) {
-      tasks = tasks.filter((task) => {
-        if (
-          task.title.toLowerCase().includes(search) ||
-          task.description.toLowerCase().includes(search)
-        ) {
-          return true;
-        }
-      });
-    }
-
-    return tasks;
-  }
- */
 
   public async getTaskById(id: string): Promise<Task> {
     const findTaskById = await this.tasksRepository.findOne({
