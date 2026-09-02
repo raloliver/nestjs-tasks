@@ -2,12 +2,11 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Wednesday, September 2nd 2026, 10:18:44 am
+ * Last Modified: Wednesday, September 2nd 2026, 10:31:31 am
  * Copyright © 2021 AMDE Agência
  */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
 import { TasksRepository } from './tasks.repository';
@@ -60,14 +59,15 @@ export class TasksService {
     return findTaskById;
   }
 
-  /*
-  public updateTaskStatus(id: string, status: TaskStatus): Task {
-    const task = this.getTaskById(id);
+  public async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
+    const task = await this.getTaskById(id);
+
     task.status = status;
+    await this.tasksRepository.save(task);
 
     return task;
   }
- */
+
   public addTask(addTaskDto: AddTaskDto): Promise<Task> {
     return this.tasksRepository.addTask(addTaskDto);
   }

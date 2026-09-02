@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Wednesday, September 2nd 2026, 10:15:25 am
+ * Last Modified: Wednesday, September 2nd 2026, 10:34:59 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -39,16 +39,17 @@ export class TasksController {
   public getTaskById(@Param('id') id: string): Promise<Task> {
     return this.taskService.getTaskById(id);
   }
-  /*
+
   @Patch('/:id/status')
   public updateTaskStatus(
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-  ): Task {
+  ): Promise<Task> {
     const { status } = updateTaskStatusDto;
+
     return this.taskService.updateTaskStatus(id, status);
   }
-  /*
+
   /**
    * @Body() just handle with attributes was sent by POST method, even there is other ones was not on Interface.
    *
