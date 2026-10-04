@@ -2,12 +2,12 @@
  * File: get-tasks-filter-dto.ts
  * Project: nestjs-tasks
  * Created: Friday, October 8th 2021, 6:19:35 am
- * Last Modified: Friday, July 8th 2022, 2:34:53 pm
+ * Last Modified: Tuesday, September 1st 2026, 4:42:03 pm
  * Copyright © 2021 AMDE Agência
  */
 
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { TaskStatus } from '../task.model';
+import { TaskStatus } from '../task-status.enum';
 
 export class GetTaskFilterDto {
   @IsOptional()

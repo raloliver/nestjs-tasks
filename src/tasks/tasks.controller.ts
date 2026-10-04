@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Friday, July 8th 2022, 2:25:02 pm
+ * Last Modified: Wednesday, September 2nd 2026, 10:50:16 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -16,27 +16,23 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { AddTaskDtoTaskDto } from './dto/add-task.dto';
+import { AddTaskDto } from './dto/add-task.dto';
 import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
-import { Task, TaskStatus } from './task.model';
+import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private taskService: TasksService) { }
+  constructor(private taskService: TasksService) {}
 
   @Get()
-  public getTasks(@Query() filterDto: GetTaskFilterDto): Task[] {
-    if (Object.keys(filterDto).length) {
-      return this.taskService.getTasksByFilter(filterDto);
-    } else {
-      return this.taskService.getTasks();
-    }
+  public getTasks(@Query() filterDto: GetTaskFilterDto): Promise<Task[]> {
+    return this.taskService.getTasks(filterDto);
   }
 
   @Get('/:id')
-  public getTaskById(@Param('id') id: string): Task {
+  public getTaskById(@Param('id') id: string): Promise<Task> {
     return this.taskService.getTaskById(id);
   }
 
@@ -44,8 +40,8 @@ export class TasksController {
   public updateTaskStatus(
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-  ): Task {
-    const { status } = updateTaskStatusDto
+  ): Promise<Task> {
+    const { status } = updateTaskStatusDto;
     return this.taskService.updateTaskStatus(id, status);
   }
 
@@ -59,12 +55,12 @@ export class TasksController {
    * @Body('description') description: string,
    */
   @Post()
-  public addTask(@Body() addTaskDto: AddTaskDtoTaskDto): Task {
+  public addTask(@Body() addTaskDto: AddTaskDto): Promise<Task> {
     return this.taskService.addTask(addTaskDto);
   }
 
   @Delete('/:id')
-  public removeTask(@Param('id') id: string): void {
-    this.taskService.removeTask(id);
+  public removeTask(@Param('id') id: string): Promise<void> {
+    return this.taskService.removeTask(id);
   }
 }
