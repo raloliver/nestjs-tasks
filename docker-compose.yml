@@ -1,0 +1,78 @@
+# ---------------------------------------------------------------------------
+# Local development stack: the Nest app plus its PostgreSQL database.
+#
+#   1. cp .env.example .env
+#   2. docker compose up --build
+#   3. curl http://localhost:3000/tasks
+#
+# Compose reads `.env` from this directory automatically and substitutes the
+# ${VAR} references below, so the credentials only ever live in one file.
+# Defaults are supplied via ${VAR:-default} so the stack still boots if you
+# never create a `.env`.
+# ---------------------------------------------------------------------------
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      # These map onto the Postgres image's own bootstrap variables. It only
+      # applies them when the data directory is first initialised, which is why
+      # changing DB_PASSWORD later has no effect unless you delete the volume.
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-task}
+    ports:
+      # HOST_PORT:5432 - only for reaching the database from outside compose
+      # (psql, pgAdmin, DBeaver). The app itself connects over the internal
+      # network and never uses this mapping.
+      #
+      # The host side defaults to 5433 because a local PostgreSQL install
+      # commonly owns 5432 already, which makes the bind fail with
+      # "port is already allocated". Point DB_HOST_PORT at 5432 if that is
+      # free, or any other unused port. Comment this block out entirely to
+      # keep Postgres reachable only from the app container.
+      - "${DB_HOST_PORT:-5433}:5432"
+    volumes:
+      # Named volume keeps your data across `docker compose down`. Run
+      # `docker compose down -v` to wipe it and start from a clean database.
+      - task-db-data:/var/lib/postgresql/data
+    healthcheck:
+      # TypeORM connects and runs `synchronize` at boot, so the app must not
+      # start until Postgres is actually accepting connections. Without this,
+      # the first `up` usually fails with ECONNREFUSED.
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-task}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Must be the service name `db`, not `localhost`: inside the container
+      # `localhost` refers to the app container itself.
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-task}
+      DB_SYNC: ${DB_SYNC:-true}
+      PORT: 3000
+    ports:
+      # HOST_PORT:CONTAINER_PORT. Change the host side (e.g. "8080:3000") if
+      # something is already listening on 3000.
+      - "${PORT:-3000}:3000"
+
+volumes:
+  task-db-data:

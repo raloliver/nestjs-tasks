@@ -1,73 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# nestjs-tasks
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A small REST API for managing tasks, built with [NestJS](https://nestjs.com) and PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Each task has a title, a description and a status (`OPEN`, `IN_PROGRESS`, `DONE`). Tasks can be
+created, fetched individually or as a list, filtered and searched, have their status changed, and
+be deleted. New tasks always start as `OPEN`.
 
-## Description
+The project follows a four-layer structure — controller, service, repository and entity — where all
+SQL is kept in the repository layer.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Stack
 
-## Installation
+| | |
+|---|---|
+| Framework | NestJS 11 |
+| Language | TypeScript 6 |
+| ORM | TypeORM 1.1 |
+| Database | PostgreSQL 16 (via `pg` 8) |
+| Validation | `class-validator` + `class-transformer` (global `ValidationPipe`) |
+| Config | `@nestjs/config` 12 (reads `.env`) |
+| Tests | Jest, Supertest |
+| Docker | `Dockerfile` (multi-stage) + `docker-compose.yml` |
 
-```bash
-$ npm install
-```
+## Endpoints
 
-## Running the app
+All routes are prefixed with `/tasks`.
 
-```bash
-# development
-$ npm run start
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/tasks` | List tasks. Accepts optional `?status=OPEN` and `?search=milk` (case-insensitive, matches title or description) |
+| `GET` | `/tasks/:id` | Fetch one task. `404` if it does not exist |
+| `POST` | `/tasks` | Create a task. Body: `{ "title": "...", "description": "..." }` |
+| `PATCH` | `/tasks/:id/status` | Change status. Body: `{ "status": "DONE" }` |
+| `DELETE` | `/tasks/:id` | Delete a task. `404` if it does not exist |
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
+Requests are validated automatically: a missing or empty `title` returns `400`, as does an
+unrecognised `status` value.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+curl -X POST http://localhost:3000/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Buy milk","description":"2 litres"}'
 ```
 
-## Support
+## Running locally with Docker
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This is the recommended way: it starts the app and its database together, and no local PostgreSQL
+install is needed.
 
-## Stay in touch
+```bash
+cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
+docker compose up --build
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The API is then available on <http://localhost:3000>.
+
+```bash
+docker compose logs -f app   # follow logs
+docker compose down          # stop
+docker compose down -v       # stop and delete the database volume
+```
+
+### Credentials
+
+`.env.example` documents every variable and is copied to `.env`, which is where you set real values.
+`.env` is git-ignored, so credentials are never committed.
+
+The defaults (`postgres` / `postgres` / `task`) are throwaway local values and are fine as-is for
+development. Two variables are worth understanding:
+
+- **`DB_HOST`** — under Docker Compose this must stay `db`, the Compose service name. `localhost`
+  inside the container refers to the app container itself, so the connection would fail.
+- **`DB_HOST_PORT`** — the *host-side* port for PostgreSQL, used only by external tools such as
+  `psql` or pgAdmin. It defaults to `5433` because a local PostgreSQL install usually already owns
+  `5432`. Change it if you need a different one, or remove the `ports` entry from the `db` service to
+  expose it only within the Compose network.
+
+The app and the database both read from the same `.env`, so credentials only ever live in one file.
+
+Note that `POSTGRES_PASSWORD` only applies when the database volume is first initialised. If you
+change `DB_PASSWORD` later, run `docker compose down -v` to start from a clean database.
+
+## Running locally without Docker
+
+Requires Node.js 20+ and a PostgreSQL instance you can reach. If you do not have one locally, you
+can still borrow the containerised database:
+
+```bash
+docker compose up -d db      # start only PostgreSQL
+cp .env.example .env
+```
+
+Then edit `.env` so the app can reach it from your machine, and start the app:
+
+```bash
+# in .env, point the app at the published port and leave DB_HOST as localhost
+DB_HOST=localhost
+DB_PORT=5433
+```
+
+```bash
+npm install
+npm run start:dev     # watch mode on http://localhost:3000
+```
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run start:dev` | Start in watch mode |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm run start:prod` | Run the compiled build |
+| `npm test` | Unit tests |
+| `npm run test:e2e` | End-to-end tests |
+| `npm run lint` | Lint with ESLint |
+| `npm run format` | Format with Prettier |
+
+> **Note:** `npm run lint` currently fails, and `test/app.e2e-spec.ts` is still the unmodified
+> scaffold test that expects a `Hello World!` root route the API does not define. Both are pending
+> fixes.
+
+## Project structure
+
+```
+src/
+├── main.ts                     # bootstrap, global ValidationPipe, PORT
+├── app.module.ts               # ConfigModule + TypeORM (config from env)
+└── tasks/
+    ├── tasks.controller.ts     # HTTP layer
+    ├── tasks.service.ts        # business logic, 404 handling
+    ├── tasks.repository.ts     # all database access
+    ├── task.entity.ts          # Task entity
+    ├── task-status.enum.ts     # OPEN | IN_PROGRESS | DONE
+    └── dto/                    # validated request payloads
+```
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+UNLICENSED
