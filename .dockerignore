@@ -1,0 +1,31 @@
+# Keep the build context small and prevent host-specific files from leaking
+# into the image or invalidating Docker's layer cache.
+
+node_modules
+dist
+coverage
+.git
+.gitignore
+.env
+.env.local
+.env.*.local
+
+*.log
+npm-debug.log*
+
+# Tests and IDE metadata are not needed to build or run the app.
+test
+.vscode
+.idea
+.eslintcache
+tsconfig.build.tsbuildinfo
+
+# Docs / compose files: the image only needs src + manifests. .dockerignore is
+# excluded implicitly by Docker and cannot COPY itself.
+README.md
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Keep .env.example out too - it holds no secrets but is not needed at runtime.
+.env.example
