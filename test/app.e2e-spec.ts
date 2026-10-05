@@ -1,3 +1,11 @@
+/*
+ * File: app.e2e-spec.ts
+ * Project: nestjs-tasks
+ * Created: Sunday, August 30th 2026, 10:31:38 am
+ * Last Modified: Monday, October 5th 2026, 8:19:25 am
+ * Copyright © 2026 AMDE Agência
+ */
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
