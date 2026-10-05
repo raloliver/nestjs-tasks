@@ -2,7 +2,7 @@
  * File: tasks.repository.ts
  * Project: nestjs-tasks
  * Created: Tuesday, September 1st 2026, 4:22:50 pm
- * Last Modified: Wednesday, September 2nd 2026, 11:22:22 am
+ * Last Modified: Monday, October 5th 2026, 9:19:10 am
  * Copyright © 2026 AMDE Agência
  */
 
@@ -21,14 +21,14 @@ export class TasksRepository extends Repository<Task> {
     super(Task, dataSource.createEntityManager());
   }
 
-  async addTask(addTaskDto: AddTaskDto): Promise<Task> {
+  public async addTask(addTaskDto: AddTaskDto): Promise<Task> {
     const { title, description } = addTaskDto;
     const task = this.create({ title, description, status: TaskStatus.OPEN });
 
     return this.save(task);
   }
 
-  async getTasks(filterDto: GetTaskFilterDto): Promise<Task[]> {
+  public async getTasks(filterDto: GetTaskFilterDto): Promise<Task[]> {
     const { status, search } = filterDto;
     const queryBuilder = this.createQueryBuilder('TASKS_REPOSITORY');
 
@@ -42,10 +42,10 @@ export class TasksRepository extends Repository<Task> {
       });
     }
 
-   /**
+    /**
      * use LOWER to lowercase the value to avoid
      * sensitive case issue on search
-     */ 
+     */
     if (search) {
       queryBuilder.andWhere(
         'LOWER(TASKS_REPOSITORY.title) LIKE LOWER(:search) OR LOWER(TASKS_REPOSITORY.description) LIKE LOWER(:search)',

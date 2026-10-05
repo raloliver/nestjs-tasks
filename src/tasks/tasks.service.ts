@@ -2,7 +2,7 @@
  * File: tasks.service.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:56:13 am
- * Last Modified: Wednesday, September 2nd 2026, 11:01:08 am
+ * Last Modified: Monday, October 5th 2026, 9:18:39 am
  * Copyright © 2021 AMDE Agência
  */
 
@@ -16,8 +16,6 @@ import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
-
   constructor(private readonly tasksRepository: TasksRepository) {}
 
   public async getTasks(filterDto: GetTaskFilterDto): Promise<Task[]> {
