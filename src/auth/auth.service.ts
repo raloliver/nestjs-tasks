@@ -15,6 +15,6 @@ export class AuthService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   public async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    this.usersRepository.createUser(authCredentialsDto);
+    return this.usersRepository.createUser(authCredentialsDto);
   }
 }

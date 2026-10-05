@@ -2,7 +2,7 @@
  * File: user.entity.ts
  * Project: nestjs-tasks
  * Created: Monday, October 5th 2026, 8:20:01 am
- * Last Modified: Monday, October 5th 2026, 8:24:25 am
+ * Last Modified: Monday, October 5th 2026, 4:18:25 pm
  * Copyright © 2026 AMDE Agência
  */
 
@@ -13,7 +13,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
 
   @Column()
