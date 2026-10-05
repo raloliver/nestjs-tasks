@@ -2,7 +2,7 @@
  * File: users.repository.ts
  * Project: nestjs-tasks
  * Created: Monday, October 5th 2026, 8:23:03 am
- * Last Modified: Monday, October 5th 2026, 4:36:24 pm
+ * Last Modified: Monday, October 5th 2026, 4:47:52 pm
  * Copyright © 2026 AMDE Agência
  */
 
@@ -13,6 +13,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { User } from './user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
@@ -29,7 +30,11 @@ export class UsersRepository extends Repository<User> {
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<void> {
     const { username, password } = authCredentialsDto;
-    const user = this.create({ username, password });
+
+    const salt = await bcrypt.genSalt();
+    const passwordHashed = await bcrypt.hash(password, salt);
+
+    const user = this.create({ username, password: passwordHashed });
 
     try {
       await this.save(user);
