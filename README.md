@@ -20,7 +20,7 @@ SQL is kept in the repository layer.
 | Validation | `class-validator` + `class-transformer` (global `ValidationPipe`) |
 | Config | `@nestjs/config` 12 (reads `.env`) |
 | Tests | Jest, Supertest |
-| Docker | `Dockerfile` (multi-stage) + `docker-compose.yml` |
+| Docker | `docker-compose.yml` — PostgreSQL only, the app runs on the host |
 
 ## Endpoints
 
@@ -43,66 +43,50 @@ curl -X POST http://localhost:3000/tasks \
   -d '{"title":"Buy milk","description":"2 litres"}'
 ```
 
-## Running locally with Docker
+## Running the project
 
-This is the recommended way: it starts the app and its database together, and no local PostgreSQL
-install is needed.
-
-```bash
-cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
-docker compose up --build
-```
-
-The API is then available on <http://localhost:3000>.
+Docker hosts **only the database**. The Nest app runs on your machine, so edits are picked up by
+watch mode, stack traces point at your real source files, and the debugger works normally.
 
 ```bash
-docker compose logs -f app   # follow logs
-docker compose down          # stop
-docker compose down -v       # stop and delete the database volume
+cp .env.example .env          # Windows PowerShell: Copy-Item .env.example .env
+npm install
+docker compose up -d --wait  # start PostgreSQL and wait until it is healthy
+npm run start:dev             # http://localhost:3000
 ```
 
-### Credentials
+```bash
+docker compose logs -f db     # follow database logs
+docker compose down           # stop the database
+docker compose down -v        # stop and delete the database volume
+```
+
+`--wait` matters: TypeORM connects on app boot, so it waits for the `pg_isready` healthcheck to
+report healthy instead of failing with `ECONNREFUSED`. If you drop it, just give the database a few
+seconds before starting the app.
+
+You can also point the app at any other PostgreSQL instance you can reach — skip
+`docker compose up` entirely and just fill in `.env`.
+
+### Credentials and ports
 
 `.env.example` documents every variable and is copied to `.env`, which is where you set real values.
-`.env` is git-ignored, so credentials are never committed.
+`.env` is git-ignored, so credentials are never committed. Compose and the app both read that same
+file, so credentials only ever live in one place.
 
 The defaults (`postgres` / `postgres` / `task`) are throwaway local values and are fine as-is for
 development. Two variables are worth understanding:
 
-- **`DB_HOST`** — under Docker Compose this must stay `db`, the Compose service name. `localhost`
-  inside the container refers to the app container itself, so the connection would fail.
-- **`DB_HOST_PORT`** — the *host-side* port for PostgreSQL, used only by external tools such as
-  `psql` or pgAdmin. It defaults to `5433` because a local PostgreSQL install usually already owns
-  `5432`. Change it if you need a different one, or remove the `ports` entry from the `db` service to
-  expose it only within the Compose network.
-
-The app and the database both read from the same `.env`, so credentials only ever live in one file.
+- **`DB_HOST`** — `localhost`, because the app runs on your machine and connects to the published
+  port. (It was the Compose service name `db` when the app ran in a container too.)
+- **`DB_PORT`** — the port the app connects to, which is the *host* side of the `DB_PORT:5432`
+  mapping in `docker-compose.yml`. It defaults to `5433` because a local PostgreSQL install usually
+  already owns `5432`, which would make the bind fail with "port is already allocated". Postgres
+  always listens on `5432` inside the container; only the host side is configurable. Change it here
+  and both the container mapping and the app follow, since they read the same variable.
 
 Note that `POSTGRES_PASSWORD` only applies when the database volume is first initialised. If you
 change `DB_PASSWORD` later, run `docker compose down -v` to start from a clean database.
-
-## Running locally without Docker
-
-Requires Node.js 20+ and a PostgreSQL instance you can reach. If you do not have one locally, you
-can still borrow the containerised database:
-
-```bash
-docker compose up -d db      # start only PostgreSQL
-cp .env.example .env
-```
-
-Then edit `.env` so the app can reach it from your machine, and start the app:
-
-```bash
-# in .env, point the app at the published port and leave DB_HOST as localhost
-DB_HOST=localhost
-DB_PORT=5433
-```
-
-```bash
-npm install
-npm run start:dev     # watch mode on http://localhost:3000
-```
 
 ## Scripts
 
