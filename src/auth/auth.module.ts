@@ -2,7 +2,7 @@
  * File: auth.module.ts
  * Project: nestjs-tasks
  * Created: Monday, October 5th 2026, 8:02:16 am
- * Last Modified: Saturday, October 17th 2026, 5:38:06 pm
+ * Last Modified: Saturday, October 17th 2026, 5:52:13 pm
  * Copyright © 2026 AMDE Agência
  */
 
@@ -16,6 +16,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User } from './user.entity';
 import { UsersRepository } from './users.repository';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { UsersRepository } from './users.repository';
         const secret = configService.get<string>('JWT_ACCESS_SECRET');
 
         if (!secret) {
-          throw new Error('JWT_ACCESS_SECRET is missing from the environment');
+          throw new Error('OPS! There is an error on the environment.');
         }
 
         return {
@@ -41,6 +42,7 @@ import { UsersRepository } from './users.repository';
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersRepository],
+  providers: [AuthService, UsersRepository, JwtStrategy],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
