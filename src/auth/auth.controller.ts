@@ -2,7 +2,7 @@
  * File: auth.controller.ts
  * Project: nestjs-tasks
  * Created: Monday, October 5th 2026, 8:16:50 am
- * Last Modified: Monday, October 5th 2026, 4:57:08 pm
+ * Last Modified: Saturday, October 17th 2026, 5:17:26 pm
  * Copyright © 2026 AMDE Agência
  */
 
@@ -22,7 +22,7 @@ export class AuthController {
   @Post('/login')
   public signIn(
     @Body() authCredentialsDto: AuthCredentialsDto,
-  ): Promise<string> {
+  ): Promise<{ accessToken: string }> {
     return this.authService.signIn(authCredentialsDto);
   }
 }
