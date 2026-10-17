@@ -2,7 +2,7 @@
  * File: tasks.controller.ts
  * Project: nestjs-tasks
  * Created: Friday, September 3rd 2021, 6:43:59 am
- * Last Modified: Wednesday, September 2nd 2026, 10:50:16 am
+ * Last Modified: Saturday, October 17th 2026, 6:04:19 pm
  * Copyright © 2021 AMDE Agência
  */
 
@@ -15,7 +15,10 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
 import { AddTaskDto } from './dto/add-task.dto';
 import { GetTaskFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
@@ -23,6 +26,7 @@ import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
   constructor(private taskService: TasksService) {}
 
