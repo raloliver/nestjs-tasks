@@ -11,28 +11,28 @@ SQL is kept in the repository layer.
 
 ## Stack
 
-| | |
-|---|---|
-| Framework | NestJS 11 |
-| Language | TypeScript 6 |
-| ORM | TypeORM 1.1 |
-| Database | PostgreSQL 16 (via `pg` 8) |
+|            |                                                                   |
+| ---------- | ----------------------------------------------------------------- |
+| Framework  | NestJS 11                                                         |
+| Language   | TypeScript 6                                                      |
+| ORM        | TypeORM 1.1                                                       |
+| Database   | PostgreSQL 16 (via `pg` 8)                                        |
 | Validation | `class-validator` + `class-transformer` (global `ValidationPipe`) |
-| Config | `@nestjs/config` 12 (reads `.env`) |
-| Tests | Jest, Supertest |
-| Docker | `docker-compose.yml` — PostgreSQL only, the app runs on the host |
+| Config     | `@nestjs/config` 12 (reads `.env`)                                |
+| Tests      | Jest, Supertest                                                   |
+| Docker     | `docker-compose.yml` — PostgreSQL only, the app runs on the host  |
 
 ## Endpoints
 
 All routes are prefixed with `/tasks`.
 
-| Method | Route | Description |
-|---|---|---|
-| `GET` | `/tasks` | List tasks. Accepts optional `?status=OPEN` and `?search=milk` (case-insensitive, matches title or description) |
-| `GET` | `/tasks/:id` | Fetch one task. `404` if it does not exist |
-| `POST` | `/tasks` | Create a task. Body: `{ "title": "...", "description": "..." }` |
-| `PATCH` | `/tasks/:id/status` | Change status. Body: `{ "status": "DONE" }` |
-| `DELETE` | `/tasks/:id` | Delete a task. `404` if it does not exist |
+| Method   | Route               | Description                                                                                                     |
+| -------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `GET`    | `/tasks`            | List tasks. Accepts optional `?status=OPEN` and `?search=milk` (case-insensitive, matches title or description) |
+| `GET`    | `/tasks/:id`        | Fetch one task. `404` if it does not exist                                                                      |
+| `POST`   | `/tasks`            | Create a task. Body: `{ "title": "...", "description": "..." }`                                                 |
+| `PATCH`  | `/tasks/:id/status` | Change status. Body: `{ "status": "DONE" }`                                                                     |
+| `DELETE` | `/tasks/:id`        | Delete a task. `404` if it does not exist                                                                       |
 
 Requests are validated automatically: a missing or empty `title` returns `400`, as does an
 unrecognised `status` value.
@@ -74,12 +74,17 @@ You can also point the app at any other PostgreSQL instance you can reach — sk
 `.env` is git-ignored, so credentials are never committed. Compose and the app both read that same
 file, so credentials only ever live in one place.
 
+- `JWT_ACCESS_SECRET` — generate by:
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+  ```
+
 The defaults (`postgres` / `postgres` / `task`) are throwaway local values and are fine as-is for
 development. Two variables are worth understanding:
 
 - **`DB_HOST`** — `localhost`, because the app runs on your machine and connects to the published
   port. (It was the Compose service name `db` when the app ran in a container too.)
-- **`DB_PORT`** — the port the app connects to, which is the *host* side of the `DB_PORT:5432`
+- **`DB_PORT`** — the port the app connects to, which is the _host_ side of the `DB_PORT:5432`
   mapping in `docker-compose.yml`. It defaults to `5433` because a local PostgreSQL install usually
   already owns `5432`, which would make the bind fail with "port is already allocated". Postgres
   always listens on `5432` inside the container; only the host side is configurable. Change it here
@@ -90,15 +95,15 @@ change `DB_PASSWORD` later, run `docker compose down -v` to start from a clean d
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run start:dev` | Start in watch mode |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm run start:prod` | Run the compiled build |
-| `npm test` | Unit tests |
-| `npm run test:e2e` | End-to-end tests |
-| `npm run lint` | Lint with ESLint |
-| `npm run format` | Format with Prettier |
+| Command              | Description                   |
+| -------------------- | ----------------------------- |
+| `npm run start:dev`  | Start in watch mode           |
+| `npm run build`      | Compile TypeScript to `dist/` |
+| `npm run start:prod` | Run the compiled build        |
+| `npm test`           | Unit tests                    |
+| `npm run test:e2e`   | End-to-end tests              |
+| `npm run lint`       | Lint with ESLint              |
+| `npm run format`     | Format with Prettier          |
 
 > **Note:** `npm run lint` currently fails, and `test/app.e2e-spec.ts` is still the unmodified
 > scaffold test that expects a `Hello World!` root route the API does not define. Both are pending
